@@ -6,6 +6,7 @@ import EnergyDNAChart from "@/components/dashboard/EnergyDNAChart";
 import DigitalTwinSimulation from "@/components/dashboard/DigitalTwinSimulation";
 import SustainabilityImpact from "@/components/dashboard/SustainabilityImpact";
 import AlertsAndZones from "@/components/dashboard/AlertsAndZones";
+import WorkflowStatus from "@/components/dashboard/WorkflowStatus";
 import { currentMetrics } from "@/lib/mockData";
 import { Zap, DollarSign, Thermometer, Users } from "lucide-react";
 
@@ -14,9 +15,9 @@ const Index = () => {
     <div className="min-h-screen bg-background grid-pattern">
       <DashboardHeader />
       
-      <main className="p-4 lg:p-6 max-w-[1600px] mx-auto space-y-4">
+      <main className="p-4 lg:p-6 max-w-[1480px] mx-auto space-y-4">
         {/* Top Metric Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <MetricCard
             label="Current Load"
             value={currentMetrics.currentUsage}
@@ -70,6 +71,9 @@ const Index = () => {
 
         {/* Alerts + Zones */}
         <AlertsAndZones />
+
+        {/* Workflow Pipeline */}
+        <WorkflowStatus />
       </main>
     </div>
   );

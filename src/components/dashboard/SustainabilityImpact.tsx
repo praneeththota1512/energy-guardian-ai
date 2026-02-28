@@ -9,75 +9,75 @@ const SustainabilityImpact = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.6 }}
-      className="glass-card gradient-border p-5"
+      transition={{ duration: 0.4, delay: 0.6 }}
+      className="glass-card p-5"
     >
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-          <Leaf className="w-4 h-4 text-accent" />
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-7 h-7 rounded-md bg-accent/8 flex items-center justify-center">
+          <Leaf className="w-3.5 h-3.5 text-accent" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Sustainability Impact</h2>
-          <p className="text-xs text-muted-foreground font-mono">Environmental footprint analysis</p>
+          <h2 className="section-title">Sustainability Impact</h2>
+          <p className="section-subtitle">Environmental footprint analysis</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-muted/50 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        <div className="bg-muted/30 rounded-lg p-2.5">
+          <div className="flex items-center gap-1 mb-0.5">
             <DollarSign className="w-3 h-3 text-accent" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Monthly Savings</span>
+            <span className="text-[9px] text-muted-foreground uppercase tracking-wider">Monthly Savings</span>
           </div>
-          <p className="text-xl font-bold font-mono text-accent">${currentMetrics.savingsMonth}</p>
+          <p className="text-lg font-bold font-mono text-accent">${currentMetrics.savingsMonth}</p>
           <p className="text-[10px] text-accent font-mono">↑ {currentMetrics.savingsPercent}%</p>
         </div>
-        <div className="bg-muted/50 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
+        <div className="bg-muted/30 rounded-lg p-2.5">
+          <div className="flex items-center gap-1 mb-0.5">
             <Flame className="w-3 h-3 text-warning" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">CO₂ Reduced</span>
+            <span className="text-[9px] text-muted-foreground uppercase tracking-wider">CO₂ Reduced</span>
           </div>
-          <p className="text-xl font-bold font-mono text-warning">{currentMetrics.carbonMonth}</p>
+          <p className="text-lg font-bold font-mono text-warning">{currentMetrics.carbonMonth}</p>
           <p className="text-[10px] text-muted-foreground font-mono">kg this month</p>
         </div>
-        <div className="bg-muted/50 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
+        <div className="bg-muted/30 rounded-lg p-2.5">
+          <div className="flex items-center gap-1 mb-0.5">
             <TreePine className="w-3 h-3 text-accent" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Trees Equiv.</span>
+            <span className="text-[9px] text-muted-foreground uppercase tracking-wider">Trees Equiv.</span>
           </div>
-          <p className="text-xl font-bold font-mono text-accent">{currentMetrics.treesEquivalent}</p>
+          <p className="text-lg font-bold font-mono text-accent">{currentMetrics.treesEquivalent}</p>
           <p className="text-[10px] text-muted-foreground font-mono">trees planted equiv.</p>
         </div>
-        <div className="bg-muted/50 rounded-lg p-3">
-          <div className="flex items-center gap-1.5 mb-1">
+        <div className="bg-muted/30 rounded-lg p-2.5">
+          <div className="flex items-center gap-1 mb-0.5">
             <Leaf className="w-3 h-3 text-primary" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Efficiency</span>
+            <span className="text-[9px] text-muted-foreground uppercase tracking-wider">Efficiency</span>
           </div>
-          <p className="text-xl font-bold font-mono text-primary">{currentMetrics.efficiency}%</p>
+          <p className="text-lg font-bold font-mono text-primary">{currentMetrics.efficiency}%</p>
           <p className="text-[10px] text-muted-foreground font-mono">optimization score</p>
         </div>
       </div>
 
       <div>
-        <p className="text-[10px] font-mono text-muted-foreground tracking-wider mb-2">WEEKLY SAVINGS (kWh)</p>
-        <div className="h-28">
+        <p className="text-[9px] font-mono text-muted-foreground tracking-wider mb-1.5">WEEKLY SAVINGS (kWh)</p>
+        <div className="h-24">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={weeklyData}>
-              <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'hsl(215, 15%, 50%)' }} tickLine={false} axisLine={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 9, fill: 'hsl(215, 12%, 45%)' }} tickLine={false} axisLine={false} />
               <YAxis hide />
               <Tooltip
                 contentStyle={{
-                  background: 'hsl(220, 18%, 10%)',
-                  border: '1px solid hsl(220, 15%, 18%)',
+                  background: 'hsl(222, 20%, 8%)',
+                  border: '1px solid hsl(222, 14%, 14%)',
                   borderRadius: '8px',
-                  fontSize: '11px',
+                  fontSize: '10px',
                   fontFamily: 'JetBrains Mono',
                 }}
               />
-              <Bar dataKey="savings" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="savings" radius={[3, 3, 0, 0]}>
                 {weeklyData.map((_, index) => (
-                  <Cell key={index} fill={`hsl(160, 70%, ${40 + index * 3}%)`} />
+                  <Cell key={index} fill={`hsl(152, 55%, ${42 + index * 2}%)`} />
                 ))}
               </Bar>
             </BarChart>

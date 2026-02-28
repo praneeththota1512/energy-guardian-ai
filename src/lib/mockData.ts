@@ -1,4 +1,16 @@
 // Simulated energy data for the AAEDT dashboard
+// Building Profile: Commercial Office Complex — 4 floors, ~12,000 sqft
+
+export const buildingProfile = {
+  name: "Nexus Tower — Block A",
+  type: "Commercial Office Complex",
+  floors: 4,
+  area: "12,400 sqft",
+  occupants: 186,
+  systems: ["HVAC Central", "Smart Lighting", "Water Heating", "EV Charging"],
+  location: "Downtown Business District",
+  buildYear: 2019,
+};
 
 export const generateTimeSeriesData = (hours: number = 24) => {
   const data = [];
@@ -7,13 +19,10 @@ export const generateTimeSeriesData = (hours: number = 24) => {
     const time = new Date(now.getTime() - i * 60 * 60 * 1000);
     const hour = time.getHours();
     
-    // Simulate realistic building energy pattern
-    const baseLoad = 8; // kWh base
+    const baseLoad = 8;
     const timeMultiplier = hour >= 8 && hour <= 18 ? 2.5 : hour >= 6 && hour <= 20 ? 1.5 : 1;
     const noise = (Math.random() - 0.5) * 3;
     const actual = baseLoad * timeMultiplier + noise;
-    
-    // Expected is smoother
     const expected = baseLoad * timeMultiplier;
     
     data.push({
@@ -69,10 +78,10 @@ export const currentMetrics = {
 };
 
 export const alerts = [
-  { id: 1, type: 'warning' as const, message: 'HVAC Zone B exceeding baseline by 23%', time: '2 min ago' },
-  { id: 2, type: 'info' as const, message: 'Peak demand window approaching (14:00-16:00)', time: '15 min ago' },
-  { id: 3, type: 'success' as const, message: 'Lighting optimization saved 4.2 kWh', time: '1 hr ago' },
-  { id: 4, type: 'danger' as const, message: 'Water heater anomaly detected — Floor 3', time: '3 hr ago' },
+  { id: 1, type: 'warning' as const, message: 'HVAC Zone B exceeding baseline by 23%', time: '2 min ago', severity: 'medium' },
+  { id: 2, type: 'info' as const, message: 'Peak demand window approaching (14:00–16:00)', time: '15 min ago', severity: 'low' },
+  { id: 3, type: 'success' as const, message: 'Lighting optimization saved 4.2 kWh on Floor 2', time: '1 hr ago', severity: 'low' },
+  { id: 4, type: 'danger' as const, message: 'Water heater anomaly detected — Floor 3 Panel C', time: '3 hr ago', severity: 'high' },
 ];
 
 export const simulationPresets = [
@@ -82,13 +91,27 @@ export const simulationPresets = [
   { label: 'Equipment Scheduling', key: 'equipment', defaultValue: 10, unit: '%', maxSaving: 5.7, maxCarbon: 1.7 },
 ];
 
+// Zone data adapted to building environment
 export const zoneData = [
-  { zone: 'Floor 1', usage: 42, status: 'normal' as const },
-  { zone: 'Floor 2', usage: 38, status: 'normal' as const },
-  { zone: 'Floor 3', usage: 67, status: 'warning' as const },
-  { zone: 'Floor 4', usage: 31, status: 'normal' as const },
-  { zone: 'HVAC-A', usage: 89, status: 'critical' as const },
-  { zone: 'HVAC-B', usage: 55, status: 'warning' as const },
-  { zone: 'Lighting', usage: 22, status: 'optimal' as const },
-  { zone: 'Water', usage: 45, status: 'normal' as const },
+  { zone: 'Floor 1 — Lobby & Reception', usage: 42, capacity: 60, status: 'normal' as const, system: 'Lighting + HVAC', occupancy: 34 },
+  { zone: 'Floor 2 — Open Office', usage: 38, capacity: 55, status: 'normal' as const, system: 'Lighting + HVAC + Equipment', occupancy: 72 },
+  { zone: 'Floor 3 — Executive Suites', usage: 67, capacity: 50, status: 'warning' as const, system: 'HVAC + Water Heater', occupancy: 45 },
+  { zone: 'Floor 4 — Data Center', usage: 31, capacity: 85, status: 'normal' as const, system: 'Cooling + UPS', occupancy: 8 },
+  { zone: 'HVAC Central — Rooftop', usage: 89, capacity: 100, status: 'critical' as const, system: 'Chiller + AHU', occupancy: 0 },
+  { zone: 'HVAC — East Wing', usage: 55, capacity: 70, status: 'warning' as const, system: 'Split AC Units', occupancy: 52 },
+  { zone: 'Parking — EV Charging', usage: 22, capacity: 40, status: 'optimal' as const, system: 'EV Chargers', occupancy: 15 },
+  { zone: 'Basement — Water Systems', usage: 45, capacity: 60, status: 'normal' as const, system: 'Boiler + Pumps', occupancy: 0 },
+];
+
+// Workflow step statuses (maps to the 9-step flow)
+export const workflowSteps = [
+  { step: 1, label: 'Data Collection', status: 'active' as const, detail: 'Receiving meter readings' },
+  { step: 2, label: 'Data Processing', status: 'active' as const, detail: 'Feature extraction running' },
+  { step: 3, label: 'Energy DNA Modeling', status: 'active' as const, detail: 'Baseline learned' },
+  { step: 4, label: 'Real-Time Monitoring', status: 'active' as const, detail: 'Comparing against baseline' },
+  { step: 5, label: 'Waste Risk Index', status: 'active' as const, detail: 'Score: 42 — Moderate' },
+  { step: 6, label: 'Digital Twin Simulation', status: 'ready' as const, detail: 'Awaiting user input' },
+  { step: 7, label: 'Optimization Decision', status: 'ready' as const, detail: 'Governance logic loaded' },
+  { step: 8, label: 'Impact Measurement', status: 'active' as const, detail: 'Tracking savings' },
+  { step: 9, label: 'Continuous Learning', status: 'active' as const, detail: 'Model updating' },
 ];
