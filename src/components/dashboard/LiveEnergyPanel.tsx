@@ -1,11 +1,19 @@
 import { motion } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { generateTimeSeriesData, currentMetrics } from "@/lib/mockData";
+import { fetchTimeSeriesData, fetchCurrentMetrics } from "@/lib/api";
 import { Zap, TrendingUp, Clock } from "lucide-react";
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const LiveEnergyPanel = () => {
-  const data = useMemo(() => generateTimeSeriesData(24), []);
+  const [data, setData] = useState<any[]>([]);
+  const [currentMetrics, setCurrentMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    fetchTimeSeriesData(24).then(setData).catch(console.error);
+    fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+  }, []);
+
+  if (!data.length || !currentMetrics) return null;
 
   return (
     <motion.div
@@ -66,14 +74,14 @@ const LiveEnergyPanel = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(222, 14%, 12%)" />
             <XAxis dataKey="hour" tick={{ fontSize: 10, fill: 'hsl(215, 12%, 45%)' }} tickLine={false} axisLine={false} />
             <YAxis tick={{ fontSize: 10, fill: 'hsl(215, 12%, 45%)' }} tickLine={false} axisLine={false} unit=" kWh" />
-            <Tooltip 
-              contentStyle={{ 
-                background: 'hsl(222, 20%, 8%)', 
+            <Tooltip
+              contentStyle={{
+                background: 'hsl(222, 20%, 8%)',
                 border: '1px solid hsl(222, 14%, 14%)',
                 borderRadius: '8px',
                 fontSize: '11px',
                 fontFamily: 'JetBrains Mono',
-              }} 
+              }}
               labelStyle={{ color: 'hsl(210, 15%, 88%)' }}
             />
             <Area type="monotone" dataKey="expected" stroke="hsl(215, 12%, 30%)" strokeDasharray="5 5" strokeWidth={1.5} fill="none" name="Expected" />

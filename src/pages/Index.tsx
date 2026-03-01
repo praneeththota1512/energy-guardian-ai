@@ -7,14 +7,23 @@ import DigitalTwinSimulation from "@/components/dashboard/DigitalTwinSimulation"
 import SustainabilityImpact from "@/components/dashboard/SustainabilityImpact";
 import AlertsAndZones from "@/components/dashboard/AlertsAndZones";
 import WorkflowStatus from "@/components/dashboard/WorkflowStatus";
-import { currentMetrics } from "@/lib/mockData";
+import { useState, useEffect } from "react";
+import { fetchCurrentMetrics } from "@/lib/api";
 import { Zap, DollarSign, Thermometer, Users } from "lucide-react";
 
 const Index = () => {
+  const [currentMetrics, setCurrentMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+  }, []);
+
+  if (!currentMetrics) return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
+
   return (
     <div className="min-h-screen bg-background grid-pattern">
       <DashboardHeader />
-      
+
       <main className="p-4 lg:p-6 max-w-[1480px] mx-auto space-y-4">
         {/* Top Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

@@ -11,21 +11,36 @@ const DigitalTwinSimulation = () => {
   );
   const [simulated, setSimulated] = useState(false);
 
-  const results = useMemo(() => {
-    const totalSavings = simulationPresets.reduce((sum, preset) => {
-      const ratio = values[preset.key] / 100;
-      return sum + preset.maxSaving * ratio;
-    }, 0);
-    const totalCarbon = simulationPresets.reduce((sum, preset) => {
-      const ratio = values[preset.key] / 100;
-      return sum + preset.maxCarbon * ratio;
-    }, 0);
-    return {
-      energySaved: totalSavings.toFixed(1),
-      costSaved: (totalSavings * 0.15).toFixed(2),
-      carbonReduced: totalCarbon.toFixed(1),
-    };
-  }, [values]);
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState({
+    energySaved: '0.0',
+    costSaved: '0.00',
+    carbonReduced: '0.0',
+  });
+
+  const handleSimulate = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/api/simulation/run', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ parameters: values }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setResults(data);
+        setSimulated(true);
+      } else {
+        console.error("Failed to run simulation");
+      }
+    } catch (error) {
+      console.error("Error connecting to simulation endpoint:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleReset = () => {
     setValues(Object.fromEntries(simulationPresets.map(p => [p.key, p.defaultValue])));
@@ -75,15 +90,16 @@ const DigitalTwinSimulation = () => {
       </div>
 
       <div className="flex gap-2 mt-4">
-        <Button 
+        <Button
           className="flex-1 bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 text-[11px] font-mono"
-          onClick={() => setSimulated(true)}
+          onClick={handleSimulate}
+          disabled={loading}
         >
           <Play className="w-3 h-3 mr-1.5" />
-          SIMULATE
+          {loading ? "SIMULATING..." : "SIMULATE"}
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
           className="border-border/40 text-muted-foreground hover:text-foreground"
           onClick={handleReset}
@@ -93,7 +109,7 @@ const DigitalTwinSimulation = () => {
       </div>
 
       {simulated && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           className="mt-3 p-3 rounded-lg bg-accent/5 border border-accent/15"

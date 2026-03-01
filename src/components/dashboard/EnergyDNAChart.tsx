@@ -1,11 +1,17 @@
 import { motion } from "framer-motion";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { generateTimeSeriesData } from "@/lib/mockData";
+import { fetchTimeSeriesData } from "@/lib/api";
 import { Dna } from "lucide-react";
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const EnergyDNAChart = () => {
-  const data = useMemo(() => generateTimeSeriesData(24), []);
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchTimeSeriesData(24).then(setData).catch(console.error);
+  }, []);
+
+  if (!data.length) return null;
 
   return (
     <motion.div

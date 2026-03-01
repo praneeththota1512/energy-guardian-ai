@@ -1,19 +1,47 @@
 import { motion } from "framer-motion";
-import { currentMetrics, generateRiskHistory } from "@/lib/mockData";
+import { fetchCurrentMetrics, fetchAnomalyDetection } from "@/lib/api";
 import { AlertTriangle } from "lucide-react";
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
+import { generateRiskHistory } from "@/lib/mockData";
 
 const WasteRiskMeter = () => {
-  const risk = currentMetrics.riskScore;
+  const [currentMetrics, setCurrentMetrics] = useState<any>(null);
+  const [mlRiskScore, setMlRiskScore] = useState<number | null>(null);
+  const [mlLabel, setMlLabel] = useState<string>("");
   const riskHistory = useMemo(() => generateRiskHistory(), []);
-  
+
+  useEffect(() => {
+    fetchCurrentMetrics().then((metrics) => {
+      setCurrentMetrics(metrics);
+
+      const hour = new Date().getHours();
+      const temperature = metrics?.temperature ?? 23.5;
+      const electricityKwh = metrics?.currentUsage ?? 18.7;
+      const waterLiters = 10.0;
+
+      fetchAnomalyDetection(electricityKwh, waterLiters, temperature, hour)
+        .then((result) => {
+          setMlRiskScore(result.waste_risk_score);
+          setMlLabel(result.is_anomaly ? "⚠️ ANOMALY" : "NORMAL");
+        })
+        .catch(() => {
+          setMlRiskScore(metrics?.riskScore ?? 42);
+          setMlLabel("FALLBACK");
+        });
+    }).catch(console.error);
+  }, []);
+
+  if (!currentMetrics || mlRiskScore === null) return null;
+
+  const risk = mlRiskScore;
+
   const getColor = (score: number) => {
     if (score < 30) return { color: 'hsl(152, 55%, 48%)', label: 'LOW RISK', class: 'text-accent' };
-    if (score < 60) return { color: 'hsl(34, 80%, 52%)', label: 'MODERATE', class: 'text-warning' };
-    return { color: 'hsl(4, 65%, 52%)', label: 'HIGH RISK', class: 'text-destructive' };
+    if (score < 60) return { color: 'hsl(34, 80%, 52%)', label: mlLabel || 'MODERATE', class: 'text-warning' };
+    return { color: 'hsl(4, 65%, 52%)', label: mlLabel || 'HIGH RISK', class: 'text-destructive' };
   };
-  
+
   const { color, label, class: textClass } = getColor(risk);
   const circumference = 2 * Math.PI * 70;
   const progress = (risk / 100) * circumference * 0.75;
@@ -31,7 +59,7 @@ const WasteRiskMeter = () => {
         </div>
         <div>
           <h2 className="section-title">Waste Risk Index</h2>
-          <p className="section-subtitle">AI-powered assessment</p>
+          <p className="section-subtitle">ML-powered · Isolation Forest</p>
         </div>
       </div>
 
@@ -40,7 +68,7 @@ const WasteRiskMeter = () => {
           <svg className="w-full h-full -rotate-[135deg]" viewBox="0 0 160 160">
             <circle cx="80" cy="80" r="70" fill="none" stroke="hsl(222, 14%, 12%)" strokeWidth="6" strokeLinecap="round"
               strokeDasharray={`${circumference * 0.75} ${circumference * 0.25}`} />
-            <motion.circle 
+            <motion.circle
               cx="80" cy="80" r="70" fill="none" stroke={color} strokeWidth="6" strokeLinecap="round"
               strokeDasharray={`${circumference * 0.75} ${circumference * 0.25}`}
               strokeDashoffset={circumference * 0.75 - progress}
@@ -51,7 +79,7 @@ const WasteRiskMeter = () => {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <motion.span 
+            <motion.span
               className={`text-3xl font-bold font-mono ${textClass}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -1,30 +1,31 @@
 import { motion } from "framer-motion";
-import { alerts, zoneData, buildingProfile } from "@/lib/mockData";
+import { fetchAlerts, fetchZones, buildingProfile } from "@/lib/api";
 import { Bell, Building2, Users, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
-const alertColors = {
+const alertColors: Record<string, string> = {
   warning: 'border-l-warning',
   info: 'border-l-primary',
   success: 'border-l-accent',
   danger: 'border-l-destructive',
 };
 
-const alertDotColors = {
+const alertDotColors: Record<string, string> = {
   warning: 'bg-warning',
   info: 'bg-primary',
   success: 'bg-accent',
   danger: 'bg-destructive',
 };
 
-const zoneStatusColors = {
+const zoneStatusColors: Record<string, string> = {
   normal: 'bg-accent/10 text-accent',
   warning: 'bg-warning/10 text-warning',
   critical: 'bg-destructive/10 text-destructive',
   optimal: 'bg-primary/10 text-primary',
 };
 
-const zoneBarColors = {
+const zoneBarColors: Record<string, string> = {
   normal: 'bg-accent',
   warning: 'bg-warning',
   critical: 'bg-destructive',
@@ -32,6 +33,16 @@ const zoneBarColors = {
 };
 
 const AlertsAndZones = () => {
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [zoneData, setZoneData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchAlerts().then(setAlerts).catch(console.error);
+    fetchZones().then(setZoneData).catch(console.error);
+  }, []);
+
+  if (!alerts.length || !zoneData.length) return null;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 col-span-full">
       {/* Alerts */}
@@ -95,7 +106,7 @@ const AlertsAndZones = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3 mb-4 mt-2 text-[10px] font-mono text-muted-foreground">
           <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {buildingProfile.occupants} occupants</span>
           <span className="text-border">•</span>

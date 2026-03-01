@@ -1,15 +1,24 @@
 import { motion } from "framer-motion";
-import { workflowSteps } from "@/lib/mockData";
+import { fetchWorkflow } from "@/lib/api";
 import { GitBranch } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   active: 'bg-accent text-accent-foreground',
   ready: 'bg-primary/15 text-primary',
   idle: 'bg-muted text-muted-foreground',
 };
 
 const WorkflowStatus = () => {
+  const [workflowSteps, setWorkflowSteps] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchWorkflow().then(setWorkflowSteps).catch(console.error);
+  }, []);
+
+  if (!workflowSteps.length) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}

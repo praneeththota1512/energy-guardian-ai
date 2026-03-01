@@ -1,11 +1,19 @@
 import { motion } from "framer-motion";
-import { currentMetrics, generateWeeklyData } from "@/lib/mockData";
+import { fetchCurrentMetrics } from "@/lib/api";
+import { generateWeeklyData } from "@/lib/mockData"; // Keeping the history generation local for now, logic can move to backend later if needed
 import { Leaf, TreePine, DollarSign, Flame } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 const SustainabilityImpact = () => {
   const weeklyData = useMemo(() => generateWeeklyData(), []);
+  const [currentMetrics, setCurrentMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+  }, []);
+
+  if (!currentMetrics) return null;
 
   return (
     <motion.div
