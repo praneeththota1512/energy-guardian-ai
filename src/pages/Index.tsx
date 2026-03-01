@@ -15,7 +15,14 @@ const Index = () => {
   const [currentMetrics, setCurrentMetrics] = useState<any>(null);
 
   useEffect(() => {
-    fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+    const loadData = () => {
+      fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+    };
+
+    loadData();
+    const interval = setInterval(loadData, 15000); // 15s polling
+
+    return () => clearInterval(interval);
   }, []);
 
   if (!currentMetrics) return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;

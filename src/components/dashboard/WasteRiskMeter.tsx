@@ -12,24 +12,34 @@ const WasteRiskMeter = () => {
   const riskHistory = useMemo(() => generateRiskHistory(), []);
 
   useEffect(() => {
-    fetchCurrentMetrics().then((metrics) => {
-      setCurrentMetrics(metrics);
+    const fetchData = async () => {
+      try {
+        const metrics = await fetchCurrentMetrics();
+        setCurrentMetrics(metrics);
 
-      const hour = new Date().getHours();
-      const temperature = metrics?.temperature ?? 23.5;
-      const electricityKwh = metrics?.currentUsage ?? 18.7;
-      const waterLiters = 10.0;
+        const hour = new Date().getHours();
+        const temperature = metrics?.temperature ?? 23.5;
+        const electricityKwh = metrics?.currentUsage ?? 18.7;
+        const waterLiters = 10.0; // This was hardcoded before, keeping it for now
 
-      fetchAnomalyDetection(electricityKwh, waterLiters, temperature, hour)
-        .then((result) => {
+        try {
+          const result = await fetchAnomalyDetection(electricityKwh, waterLiters, temperature, hour);
           setMlRiskScore(result.waste_risk_score);
           setMlLabel(result.is_anomaly ? "⚠️ ANOMALY" : "NORMAL");
-        })
-        .catch(() => {
+        } catch (anomalyError) {
+          console.error("Anomaly Detection failed:", anomalyError);
           setMlRiskScore(metrics?.riskScore ?? 42);
           setMlLabel("FALLBACK");
-        });
-    }).catch(console.error);
+        }
+      } catch (metricsError) {
+        console.error("Failed to fetch current metrics:", metricsError);
+      }
+    };
+
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 15000); // Poll every 15 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   if (!currentMetrics || mlRiskScore === null) return null;

@@ -9,8 +9,15 @@ const LiveEnergyPanel = () => {
   const [currentMetrics, setCurrentMetrics] = useState<any>(null);
 
   useEffect(() => {
-    fetchTimeSeriesData(24).then(setData).catch(console.error);
-    fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+    const loadData = () => {
+      fetchTimeSeriesData(24).then(setData).catch(console.error);
+      fetchCurrentMetrics().then(setCurrentMetrics).catch(console.error);
+    };
+
+    loadData();
+    const interval = setInterval(loadData, 15000); // 15s polling
+
+    return () => clearInterval(interval);
   }, []);
 
   if (!data.length || !currentMetrics) return null;
